@@ -7,6 +7,7 @@ import {
   updateUserProfile,
 } from "../controllers/userController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { createExam, getExams } from "../controllers/examController.js";
 const userRoutes = express.Router();
 userRoutes.post("/", registerUser);
 userRoutes.post("/auth", authUser);

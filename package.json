@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon backend/server.js",
-    "client": "npm run dev --prefix frontend",
+    "client": "npm start --prefix frontend",
     "dev": "concurrently \" npm run server \" \" npm run client \""
   },
   "type": "module",
@@ -19,7 +19,8 @@
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.0"
+    "mongoose": "^7.5.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.1",

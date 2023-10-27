@@ -12,7 +12,6 @@ import {
 
 const CreateExam = ({ formik, title, subtitle, subtext }) => {
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
-  //   console.log(values, errors, touched, handleBlur, handleChange, handleSubmit);
 
   return (
     <>

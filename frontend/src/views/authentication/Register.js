@@ -7,7 +7,6 @@ import AuthRegister from './auth/AuthRegister';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-//bring Register Api and Set credential
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useRegisterMutation } from './../../slices/usersApiSlice';
@@ -40,19 +39,17 @@ const Register = () => {
     initialValues: initialUserValues,
     validationSchema: userValidationSchema,
     onSubmit: (values, action) => {
-      console.log('🚀 ~ file: Registration.jsx ~ line 11 ~ Registration ~ values', values);
       handleSubmit(values);
-      // action.resetForm();
     },
   });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // initialize register
+
   const [register, { isLoading }] = useRegisterMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
-  // if user already login send to /
+
   useEffect(() => {
     if (userInfo) {
       navigate('/');
@@ -64,15 +61,6 @@ const Register = () => {
   };
 
   const handleSubmit = async ({ name, email, password, confirm_password, role }) => {
-    // event.preventDefault();
-    // Now you can access 'name', 'email', 'password', and 'role' here
-    console.log('THis is My formHandle Function');
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('confirm_Password:', confirm_password);
-    console.log('Role:', role);
-    // After a successful API call, you can reset the form
     if (password !== confirm_password) {
       toast.error('Passwords do not match');
     } else {
@@ -81,10 +69,7 @@ const Register = () => {
         dispatch(setCredentials({ ...res }));
         formik.resetForm();
 
-        // Now, navigate to the "Sign In" page
         navigate('/auth/login');
-
-        // navigate('/');
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }

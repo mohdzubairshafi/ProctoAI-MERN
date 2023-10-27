@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
-import { Box, Button, TextField, FormControlLabel, Checkbox, Stack } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Button,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Stack,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import swal from 'sweetalert';
+import { useCreateQuestionMutation, useGetExamsQuery } from 'src/slices/examApiSlice';
+import { toast } from 'react-toastify';
 
 const AddQuestionForm = () => {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newOptions, setNewOptions] = useState(['', '', '', '']);
   const [correctOptions, setCorrectOptions] = useState([false, false, false, false]);
+  const [selectedExamId, setSelectedExamId] = useState('');
 
   const handleOptionChange = (index) => {
     const updatedCorrectOptions = [...correctOptions];
@@ -14,9 +26,18 @@ const AddQuestionForm = () => {
     setCorrectOptions(updatedCorrectOptions);
   };
 
-  const handleAddQuestion = () => {
+  const [createQuestion, { isLoading }] = useCreateQuestionMutation();
+  const { data: examsData } = useGetExamsQuery();
+
+  useEffect(() => {
+    if (examsData && examsData.length > 0) {
+      setSelectedExamId(examsData[0].examId);
+      console.log(examsData[0].examId, 'examsData[0].examId');
+    }
+  }, [examsData]);
+
+  const handleAddQuestion = async () => {
     if (newQuestion.trim() === '' || newOptions.some((option) => option.trim() === '')) {
-      //   alert('Please fill out the question and all options.');
       swal('', 'Please fill out the question and all options.', 'error');
       return;
     }
@@ -27,20 +48,50 @@ const AddQuestionForm = () => {
         optionText: option,
         isCorrect: correctOptions[index],
       })),
+      examId: selectedExamId,
     };
 
-    setQuestions([...questions, newQuestionObj]);
+    try {
+      const res = await createQuestion(newQuestionObj).unwrap();
+      if (res) {
+        toast.success('Question added successfully!!!');
+      }
+      setQuestions([...questions, res]);
+      setNewQuestion('');
+      setNewOptions(['', '', '', '']);
+      setCorrectOptions([false, false, false, false]);
+    } catch (err) {
+      swal('', 'Failed to create question. Please try again.', 'error');
+    }
+  };
+
+  const handleSubmitQuestions = () => {
+    setQuestions([]);
     setNewQuestion('');
     setNewOptions(['', '', '', '']);
     setCorrectOptions([false, false, false, false]);
   };
 
-  const handleSubmitQuestions = () => {
-    console.log('Submitted Questions:', questions);
-  };
-
   return (
     <div>
+      <Select
+        label="Select Exam"
+        value={selectedExamId}
+        onChange={(e) => {
+          console.log(e.target.value, 'option ID');
+          setSelectedExamId(e.target.value);
+        }}
+        fullWidth
+        sx={{ mb: 2 }}
+      >
+        {examsData &&
+          examsData.map((exam) => (
+            <MenuItem key={exam.examId} value={exam.examId}>
+              {exam.examName}
+            </MenuItem>
+          ))}
+      </Select>
+
       {questions.map((questionObj, questionIndex) => (
         <div key={questionIndex}>
           <TextField
@@ -97,7 +148,7 @@ const AddQuestionForm = () => {
               setNewOptions(updatedOptions);
             }}
             fullWidth
-            sx={{ flex: '80%' }} // Set TextField to 80% width
+            sx={{ flex: '80%' }}
           />
           <FormControlLabel
             control={

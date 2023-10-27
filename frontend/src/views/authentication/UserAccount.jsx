@@ -6,7 +6,6 @@ import Logo from 'src/layouts/full/shared/logo/Logo';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-//bring UserAccount Api and Set credential
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useUpdateUserMutation } from '../../slices/usersApiSlice';
@@ -43,9 +42,7 @@ const UserAccount = () => {
     initialValues: initialUserValues,
     validationSchema: userValidationSchema,
     onSubmit: (values, action) => {
-      console.log('🚀 ~ file: Registration.jsx ~ line 11 ~ Registration ~ values', values);
       handleSubmit(values);
-      // action.resetForm();
     },
   });
 
@@ -53,21 +50,7 @@ const UserAccount = () => {
 
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
-  // useEffect(() => {
-  //   setName(userInfo.name);
-  //   setEmail(userInfo.email);
-  // }, [userInfo.email, userInfo.name]);
-
   const handleSubmit = async ({ name, email, password, confirm_password, role }) => {
-    // event.preventDefault();
-    // Now you can access 'name', 'email', 'password', and 'role' here
-    console.log('THis is My Update Form handle Function');
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('confirm_Password:', confirm_password);
-    console.log('Role:', role);
-    // After a successful API call, you can reset the form
     if (password !== confirm_password) {
       toast.error('Passwords do not match');
     } else {
@@ -79,7 +62,6 @@ const UserAccount = () => {
           password,
           role,
         }).unwrap();
-        console.log(res);
         dispatch(setCredentials(res));
         toast.success('Profile updated successfully');
       } catch (err) {

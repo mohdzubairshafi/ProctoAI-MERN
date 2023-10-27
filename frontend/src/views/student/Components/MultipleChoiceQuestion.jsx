@@ -10,19 +10,20 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import questions from './questionData';
-import { Container } from '@mui/material';
 
-export default function MultipleChoiceQuestion() {
+import { Container } from '@mui/material';
+import { useGetQuestionsQuery } from 'src/slices/examApiSlice';
+import { useParams } from 'react-router';
+
+export default function MultipleChoiceQuestion({ questions, saveUserTestScore }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [score, setScore] = useState(0);
 
-  const [isLastQuestion, setIsLastQuestion] = useState(false); // New state for isLastQuestion
-  const [isFinishTest, setisFinishTest] = useState(false); // New state for isLastQuestion
+  const [isLastQuestion, setIsLastQuestion] = useState(false);
+  const [isFinishTest, setisFinishTest] = useState(false);
 
   useEffect(() => {
-    // Check if currentQuestion is the last question whenever it changes
     setIsLastQuestion(currentQuestion === questions.length - 1);
   }, [currentQuestion]);
 
@@ -31,23 +32,22 @@ export default function MultipleChoiceQuestion() {
   };
 
   const handleNextQuestion = () => {
-    const isCorrect =
-      questions[currentQuestion].options.find((option) => option.isCorrect).id === selectedOption;
+    let isCorrect = false;
+    isCorrect =
+      questions[currentQuestion].options.find((option) => option.isCorrect)._id === selectedOption;
     if (isCorrect) {
       setScore(score + 1);
+      saveUserTestScore();
     }
 
     setSelectedOption(null);
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Handle quiz completion, e.g., show results
       setisFinishTest(true);
     }
   };
 
-  // const isLastQuestion = currentQuestion === questions.length - 1;
-  console.log('LAST QUESTION ON: ', isLastQuestion, currentQuestion, questions.length);
   return (
     <Card>
       <CardContent>
@@ -67,10 +67,10 @@ export default function MultipleChoiceQuestion() {
             >
               {questions[currentQuestion].options.map((option) => (
                 <FormControlLabel
-                  key={option.id}
-                  value={option.id}
+                  key={option._id}
+                  value={option._id}
                   control={<Radio />}
-                  label={option.text}
+                  label={option.optionText}
                 />
               ))}
             </RadioGroup>
@@ -86,11 +86,6 @@ export default function MultipleChoiceQuestion() {
           >
             {isLastQuestion ? 'Finish' : 'Next Question'}
           </Button>
-          {isFinishTest && (
-            <Typography variant="body2" style={{ marginTop: '16px' }}>
-              Your Score: {score} out of {questions.length}
-            </Typography>
-          )}
         </Stack>
       </CardContent>
     </Card>

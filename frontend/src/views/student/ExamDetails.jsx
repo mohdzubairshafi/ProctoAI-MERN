@@ -19,6 +19,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useGetQuestionsQuery } from 'src/slices/examApiSlice';
 
 function Copyright(props) {
   return (
@@ -36,10 +37,13 @@ function Copyright(props) {
 const DescriptionAndInstructions = () => {
   const navigate = useNavigate();
 
-  const { exam_id } = useParams();
+  const { examId } = useParams();
+  const { data: questions, isLoading } = useGetQuestionsQuery(examId); // Fetch questions using examId
+  // const { data: questions, isLoading } = useGetQuestionsQuery({ examId });
+
   // fech exam data from backend
   // pass testUnique id on start button
-  const test_id = uniqueId();
+  const testId = uniqueId();
   // accetp
   const [certify, setCertify] = useState(false);
   const handleCertifyChange = () => {
@@ -51,7 +55,7 @@ const DescriptionAndInstructions = () => {
     console.log('Test link');
     if (isValid) {
       // Replace 'examid' and 'TestId' with the actual values
-      navigate(`/exam/${exam_id}/${test_id}`);
+      navigate(`/exam/${examId}/${testId}`);
     } else {
       // Display an error message or handle invalid date
       toast.error('Test date is not valid.');

@@ -16,10 +16,9 @@ import { IconListCheck, IconMail, IconUser } from '@tabler/icons-react';
 
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
 
-// LogOut Api handle
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// bring logout mutation and logout frmo auth slice whcih clear local storage
+
 import { logout } from './../../../slices/authSlice';
 import { useLogoutMutation } from './../../../slices/usersApiSlice';
 
@@ -33,10 +32,10 @@ const Profile = () => {
   };
 
   const { userInfo } = useSelector((state) => state.auth);
-  // initial dispact as we neend it to cear storage logout
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // initialize logout we can giv e any name
+
   const [logoutApiCall] = useLogoutMutation();
 
   const logoutHandler = async () => {
@@ -44,9 +43,7 @@ const Profile = () => {
       await logoutApiCall().unwrap();
       dispatch(logout());
       navigate('/auth/login');
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) {}
   };
   return (
     <Box>

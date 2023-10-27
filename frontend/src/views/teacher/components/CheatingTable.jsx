@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -10,46 +10,56 @@ import {
   TableRow,
   Typography,
   TextField,
+  Select,
+  MenuItem,
 } from '@mui/material';
-
-function createData(
-  name,
-  email,
-  tabChange,
-  prohibitedKeyPress,
-  multipleFaceDetected,
-  mobileFound,
-  prohibitedObjectDetected,
-) {
-  return {
-    name,
-    email,
-    tabChange,
-    prohibitedKeyPress,
-    multipleFaceDetected,
-    mobileFound,
-    prohibitedObjectDetected,
-  };
-}
-
-const users = [
-  createData('User 1', 'user1@example.com', 4, 2, 5, 1, 3),
-  createData('User 2', 'user2@example.com', 2, 3, 1, 5, 4),
-  createData('User 3', 'user3@example.com', 5, 1, 3, 2, 4),
-  createData('User 4', 'user4@example.com', 3, 4, 2, 4, 5),
-  createData('User 5', 'user5@example.com', 1, 5, 4, 3, 2),
-];
+import { useGetExamsQuery } from 'src/slices/examApiSlice';
+import { useGetCheatingLogsQuery } from 'src/slices/cheatingLogApiSlice';
 
 export default function CheatingTable() {
   const [filter, setFilter] = useState('');
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(filter.toLowerCase()) ||
-      user.email.toLowerCase().includes(filter.toLowerCase()),
+  const [selectedExamId, setSelectedExamId] = useState('');
+  const [cheatingLogs, setCheatingLogs] = useState([]);
+
+  const { data: examsData } = useGetExamsQuery();
+  const { data: cheatingLogsData, isLoading } = useGetCheatingLogsQuery(selectedExamId);
+
+  useEffect(() => {
+    if (examsData && examsData.length > 0) {
+      setSelectedExamId(examsData[0].examId);
+    }
+  }, [examsData]);
+
+  useEffect(() => {
+    if (cheatingLogsData) {
+      setCheatingLogs(cheatingLogsData);
+    }
+  }, [cheatingLogsData]);
+
+  const filteredUsers = cheatingLogs.filter(
+    (log) =>
+      log.username.toLowerCase().includes(filter.toLowerCase()) ||
+      log.email.toLowerCase().includes(filter.toLowerCase()),
   );
 
   return (
     <Box>
+      <Select
+        label="Select Exam"
+        value={selectedExamId}
+        onChange={(e) => {
+          setSelectedExamId(e.target.value);
+        }}
+        fullWidth
+        sx={{ mb: 2 }}
+      >
+        {examsData &&
+          examsData.map((exam) => (
+            <MenuItem key={exam.examId} value={exam.examId}>
+              {exam.examName}
+            </MenuItem>
+          ))}
+      </Select>
       <TextField
         label="Filter by Name or Email"
         variant="outlined"
@@ -65,24 +75,22 @@ export default function CheatingTable() {
               <TableCell>Sno</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Tab Change</TableCell>
-              <TableCell>Prohibited Key Press</TableCell>
-              <TableCell>Multiple Face Detected</TableCell>
-              <TableCell>Mobile Found</TableCell>
-              <TableCell>Prohibited Object Detected</TableCell>
+              <TableCell>No Face Count</TableCell>
+              <TableCell>Multiple Face Count</TableCell>
+              <TableCell>Cell Phone Count</TableCell>
+              <TableCell>Prohibited Object Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.map((user, index) => (
+            {filteredUsers.map((log, index) => (
               <TableRow key={index}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.tabChange}</TableCell>
-                <TableCell>{user.prohibitedKeyPress}</TableCell>
-                <TableCell>{user.multipleFaceDetected}</TableCell>
-                <TableCell>{user.mobileFound}</TableCell>
-                <TableCell>{user.prohibitedObjectDetected}</TableCell>
+                <TableCell>{log.username}</TableCell>
+                <TableCell>{log.email}</TableCell>
+                <TableCell>{log.noFaceCount}</TableCell>
+                <TableCell>{log.multipleFaceCount}</TableCell>
+                <TableCell>{log.cellPhoneCount}</TableCell>
+                <TableCell>{log.prohibitedObjectCount}</TableCell>
               </TableRow>
             ))}
           </TableBody>

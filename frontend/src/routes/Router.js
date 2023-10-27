@@ -1,6 +1,7 @@
 import React, { lazy } from 'react';
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import Loadable from '../layouts/full/shared/loadable/Loadable';
+import { useSelector } from 'react-redux';
 
 /* ***Layouts**** */
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
@@ -8,8 +9,9 @@ const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const ExamLayout = Loadable(lazy(() => import('../layouts/full/ExamLayout')));
 
 /* ****Pages***** */
-const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')));
+// const Dashboard = Loadable(lazy(() => import('../views/dashboard/Dashboard')));
 const SamplePage = Loadable(lazy(() => import('../views/sample-page/SamplePage')));
+const Success = Loadable(lazy(() => import('../views/Success')));
 // const Icons = Loadable(lazy(() => import('../views/icons/Icons')));
 // const TypographyPage = Loadable(lazy(() => import('../views/utilities/TypographyPage')));
 // const Shadow = Loadable(lazy(() => import('../views/utilities/Shadow')));
@@ -30,6 +32,7 @@ const CreateExamPage = Loadable(lazy(() => import('./../views/teacher/CreateExam
 const ExamLogPage = Loadable(lazy(() => import('./../views/teacher/ExamLogPage')));
 const AddQuestions = Loadable(lazy(() => import('./../views/teacher/AddQuestions')));
 const PrivateRoute = Loadable(lazy(() => import('src/views/authentication/PrivateRoute')));
+const TeacherRoute = Loadable(lazy(() => import('src/views/authentication/TeacherRoute')));
 
 const Router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,24 +44,20 @@ const Router = createBrowserRouter(
         {/* // Main layout */}
         <Route path="/" element={<FullLayout />}>
           <Route index={true} path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/dashboard" exact={true} element={<Dashboard />} />
+          <Route path="/dashboard" exact={true} element={<ExamPage />} />
           <Route path="/sample-page" exact={true} element={<SamplePage />} />
+          <Route path="/Success" exact={true} element={<Success />} />
           <Route path="/exam" exact={true} element={<ExamPage />} />
           <Route path="/result" exact={true} element={<ResultPage />} />
-          <Route path="/create-exam" exact={true} element={<CreateExamPage />} />
-          <Route path="/exam-log" exact={true} element={<ExamLogPage />} />
-          <Route path="/add-questions" exact={true} element={<AddQuestions />} />
-          {/* <Route path="*" element={<Navigate to="/auth/404" />} /> */}
+          <Route path="" element={<TeacherRoute />}>
+            <Route path="/create-exam" exact={true} element={<CreateExamPage />} />
+            <Route path="/add-questions" exact={true} element={<AddQuestions />} />
+            <Route path="/exam-log" exact={true} element={<ExamLogPage />} />
+          </Route>
         </Route>
-        <Route
-          path="/"
-          element={
-            <ExamLayout />
-            // <BlankLayout />
-          }
-        >
-          <Route path="exam/:exam_id" exact={true} element={<ExamDetails />} />
-          <Route path="exam/:exam_id/:test_id" exact={true} element={<TestPage />} />
+        <Route path="/" element={<ExamLayout />}>
+          <Route path="exam/:examId" exact={true} element={<ExamDetails />} />
+          <Route path="exam/:examId/:testId" exact={true} element={<TestPage />} />
         </Route>
       </Route>
       {/* User layout */}
@@ -78,31 +77,3 @@ const Router = createBrowserRouter(
 );
 
 export default Router;
-
-// const Router = [
-//   {
-//     path: '/',
-//     element: <FullLayout />,
-//     children: [
-//       { path: '/', element: <Navigate to="/dashboard" /> },
-//       { path: '/dashboard', exact: true, element: <Dashboard /> },
-//       { path: '/sample-page', exact: true, element: <SamplePage /> },
-//       { path: '/exam', exact: true, element: <ExamPage /> },
-//       { path: '/result', exact: true, element: <ResultPage /> },
-//       { path: '/create-exam', exact: true, element: <CreateExamPage /> },
-//       { path: '/exam-log', exact: true, element: <ExamLogPage /> },
-//       { path: '/generate-report', exact: true, element: <AddQuestions /> },
-//       { path: '*', element: <Navigate to="/auth/404" /> },
-//     ],
-//   },
-//   {
-//     path: '/auth',
-//     element: <BlankLayout />,
-//     children: [
-//       { path: '404', element: <Error /> },
-//       { path: '/auth/register', element: <Register /> },
-//       { path: '/auth/login', element: <Login /> },
-//       { path: '*', element: <Navigate to="/auth/404" /> },
-//     ],
-//   },
-// ];

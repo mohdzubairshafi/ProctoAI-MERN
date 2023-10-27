@@ -23,10 +23,9 @@ export const examApiSlice = apiSlice.injectEndpoints({
     }),
     // Get questions for a specific exam
     getQuestions: builder.query({
-      query: (data) => ({
-        url: `${EXAMS_URL}/exam/questions`,
+      query: (examId) => ({
+        url: `${EXAMS_URL}/exam/questions/${examId}`,
         method: 'GET',
-        body: data,
       }),
     }),
     // Create a new question for an exam

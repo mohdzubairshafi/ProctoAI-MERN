@@ -6,8 +6,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { useUpdateUserMutation } from '../../slices/usersApiSlice';
-import { setCredentials } from '../../slices/authSlice';
+import { useCreateExamMutation } from '../../slices/examApiSlice.js';
 
 const examValidationSchema = yup.object({
   examName: yup.string().required('Exam Name is required'),
@@ -23,7 +22,6 @@ const examValidationSchema = yup.object({
     .integer('Exam Duration must be an integer')
     .min(1, 'Exam Duration must be at least 1 minute')
     .required('Exam Duration is required'),
-  // liveLink: yup.string().url('Live Link must be a valid URL').required('Live Link is required'),
   liveDate: yup.date().required('Live Date and Time is required'),
   deadDate: yup.date().required('Dead Date and Time is required'),
 });
@@ -35,7 +33,6 @@ const CreateExamPage = () => {
     examName: '',
     totalQuestions: '',
     duration: '',
-    // liveLink: '',
     liveDate: '',
     deadDate: '',
   };
@@ -48,26 +45,21 @@ const CreateExamPage = () => {
     },
   });
 
-  // const dispatch = useDispatch();
-  // const [updateProfile, { isLoading }] = useUpdateUserMutation();
+  const dispatch = useDispatch();
+  const [createExam, { isLoading }] = useCreateExamMutation();
 
   const handleSubmit = async (values) => {
-    console.log('Exam data: ', values);
-
     try {
-      // const res = await updateProfile({
-      //   _id: userInfo._id,
-      //   ...values,
-      // }).unwrap();
-      // dispatch(setCredentials(res));
+      const res = await createExam(values).unwrap();
       toast.success('Exam Created successfully');
+      formik.resetForm();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
 
   return (
-    <PageContainer title="CreateExamPage" description="This is CreateExamPage page">
+    <PageContainer title="Create Exam" description="Create a new exam">
       <Box
         sx={{
           position: 'relative',

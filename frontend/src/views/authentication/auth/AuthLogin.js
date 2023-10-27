@@ -13,7 +13,6 @@ import { Link } from 'react-router-dom';
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField';
 
 const AuthLogin = ({ formik, title, subtitle, subtext }) => {
-  console.log(formik);
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
   return (
     <>

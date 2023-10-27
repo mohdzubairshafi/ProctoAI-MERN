@@ -2,20 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Grid, Box, Card, Stack, Typography } from '@mui/material';
 
-// components
 import PageContainer from 'src/components/container/PageContainer';
 import Logo from 'src/layouts/full/shared/logo/Logo';
 import AuthLogin from './auth/AuthLogin';
-// Form Validation And Control
+
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-// Auth Functionality
-// to dispatch action and get data from state we need reducer function
 import { useDispatch, useSelector } from 'react-redux';
-// import login api function /mutation
+
 import { useLoginMutation } from './../../slices/usersApiSlice';
-// import set credential to save data we get after calling api
+
 import { setCredentials } from './../../slices/authSlice';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
@@ -37,64 +34,39 @@ const Login = () => {
     initialValues: initialUserValues,
     validationSchema: userValidationSchema,
     onSubmit: (values, action) => {
-      console.log('🚀 ~ file: Registration.jsx ~ line 11 ~ Registration ~ values', values);
       handleSubmit(values);
-      // action.resetForm();
     },
   });
 
-  // Backend Api Handling
-
-  // initialize navigate and dispatch
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // login mutation ,we can all this login any name
+
   const [login, { isLoading }] = useLoginMutation();
 
-  // get userinfo state from auth state
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // if userinfo present we dont need login redirect to /
     if (userInfo) {
       navigate('/');
     }
   }, [navigate, userInfo]);
 
   const handleSubmit = async ({ email, password }) => {
-    // Now you can access 'email', 'password' here
-    console.log('THis is My formHandle Function');
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // After a successful API call, you can reset the form
-    // login logic here
-    // we care calling login function which is in user apiSlice
-    // unwrap  unwrap the promise which login return
     try {
       const res = await login({ email, password }).unwrap();
-      // setting user to local storage
+
       dispatch(setCredentials({ ...res }));
       formik.resetForm();
-      // After a successful login, get the stored location
+
       const redirectLocation = JSON.parse(localStorage.getItem('redirectLocation'));
-      console.log('redict after login ', redirectLocation);
       if (redirectLocation) {
-        localStorage.removeItem('redirectLocation'); // Remove the stored location
-        console.log(
-          'redict after login path  ',
-          redirectLocation.pathname,
-          typeof redirectLocation.pathname,
-        );
-        navigate(redirectLocation.pathname); // Redirect the user to the stored location
+        localStorage.removeItem('redirectLocation');
+        navigate(redirectLocation.pathname);
       } else {
-        // If no stored location, navigate to a default route
         navigate('/');
       }
-      // Now, navigate to the "Dashboard" page
-      // navigate('/');
     } catch (err) {
       toast.error(err?.data?.message || err.error);
-      // console.log(err?.data?.message || err.error);
     }
   };
 

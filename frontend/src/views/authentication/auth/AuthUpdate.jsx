@@ -5,7 +5,6 @@ import CustomTextField from '../../../components/forms/theme-elements/CustomText
 import { Stack } from '@mui/system';
 
 const AuthUpdate = ({ formik, title, subtitle, subtext }) => {
-  console.log(formik);
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } = formik;
   return (
     <>

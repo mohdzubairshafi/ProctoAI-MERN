@@ -1,35 +1,27 @@
 import asyncHandler from "express-async-handler";
 import Question from "../models/quesModel.js";
 
-// @desc Get all questions related to an exam
-// @route GET /api/exam/questions/:examId
-// @access Public
 const getQuestionsByExamId = asyncHandler(async (req, res) => {
-  //   const { examId } = req.params;
-  const { examId } = req.body;
+  const { examId } = req.params;
+  console.log("Question Exam id ", examId);
+
   if (!examId) {
     return res.status(400).json({ error: "examId is missing or invalid" });
   }
 
-  console.log(examId);
   const questions = await Question.find({ examId });
+  console.log("Question Exam  ", questions);
+
   res.status(200).json(questions);
 });
 
-// @desc Create a new question for an exam
-// @route POST /api/exam/questions/:examId
-// @access Private (admin)
 const createQuestion = asyncHandler(async (req, res) => {
-  //   const { examId } = req.params;
-  //   const { question, options } = req.body;
   const { question, options, examId } = req.body;
 
-  // Verify that examId is not undefined or empty
   if (!examId) {
     return res.status(400).json({ error: "examId is missing or invalid" });
   }
 
-  console.log(examId, question, options);
   const newQuestion = new Question({
     question,
     options,
